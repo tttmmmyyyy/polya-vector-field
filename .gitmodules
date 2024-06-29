@@ -1,0 +1,6 @@
+[submodule "cairo-fixlang"]
+	path = cairo-fixlang
+	url = https://github.com/tttmmmyyyy/cairo-fixlang.git
+[submodule "fixlang_minilib"]
+	path = fixlang_minilib
+	url = https://github.com/pt9999/fixlang_minilib.git
