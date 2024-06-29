@@ -1,4 +1,4 @@
-# Visualization of complex functions by Polya vector field
+# Visualization of complex functions as flow by Polya vector field
 
 Inspired by: https://observablehq.com/@vinicius-mello/polya-vector-field 
 
