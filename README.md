@@ -8,4 +8,4 @@ To compile the program, you need to
 - install [Fix-lang](https://github.com/tttmmmyyyy/fixlang),
 - clone this repo with submodules by `git clone --recursive {repo-url}`,
 - install dependencies of [cairo-fixlang](https://github.com/tttmmmyyyy/cairo-fixlang) (cairo, X11, Xext) if necessary,
-- and do `make`.
+- and do `make && ./a.out`.
