@@ -2,7 +2,7 @@
 
 Inspired by: https://observablehq.com/@vinicius-mello/polya-vector-field 
 
-This is written by Fix-lang, and depending on libraries cairo-fixlang and fixlang_minilib.
+This is written by [Fix-lang](https://github.com/tttmmmyyyy/fixlang), and depending on libraries [cairo-fixlang](https://github.com/tttmmmyyyy/cairo-fixlang) and [fixlang_minilib](https://github.com/pt9999/fixlang_minilib.git).
 
 To compile the program, you need to 
 - install [Fix-lang](https://github.com/tttmmmyyyy/fixlang),
