@@ -13,70 +13,107 @@ import Debug::{debug_println};
 type ComplexF = Complex F64;
 
 // w = z
-function1 : ComplexF -> ComplexF;
-function1 = |z| z;
+function_z : ComplexF -> ComplexF;
+function_z = |z| z;
 
 // w = z^2
-function2 : ComplexF -> ComplexF;
-function2 = |z| z * z;
+function_z2 : ComplexF -> ComplexF;
+function_z2 = |z| z * z;
 
 // w = z^3
-function3 : ComplexF -> ComplexF;
-function3 = |z| z * z * z;
+function_z3 : ComplexF -> ComplexF;
+function_z3 = |z| z * z * z;
 
 // w = 1 / z
-function4 : ComplexF -> ComplexF;
-function4 = |z| complex(1.0, 0.0) / z;
+function_inv_z : ComplexF -> ComplexF;
+function_inv_z = |z| complex(1.0, 0.0) / z;
 
 // w = 1 / z^2
-function5 : ComplexF -> ComplexF;
-function5 = |z| complex(1.0, 0.0) / (z * z);
+function_inv_z2 : ComplexF -> ComplexF;
+function_inv_z2 = |z| complex(1.0, 0.0) / (z * z);
 
 // w = 1 / z^3
-function6 : ComplexF -> ComplexF;
-function6 = |z| complex(1.0, 0.0) / (z * z * z);
-
-// w = exp(pi z)
-function7 : ComplexF -> ComplexF;
-function7 = |z| let z = complex(pi64, 0.0) * z; complex(exp(z.@re), 0.0) * complex(cos(z.@im), sin(z.@im));
-
-// w = 1 / sin(pi i z)
-function8 : ComplexF -> ComplexF;
-function8 = |z| (
-    let z = complex(0.0, 1.0) * complex(pi64, 0.0) * z;
-    let exp = |z| complex(exp(z.@re), 0.0) * complex(cos(z.@im), sin(z.@im));
-    let iz = complex(0.0, 1.0) * z;
-    let eiz = exp(iz);
-    let niz = complex(0.0, -1.0) * z;
-    let eniz = exp(niz);
-    let sinz = (eiz - eniz) / complex(0.0, 2.0);
-    complex(1.0, 0.0) / sinz
-);
-
-// w = log(z); 
-function9 : ComplexF -> ComplexF;
-function9 = |z| complex(log(z.abs), z.arg);
+function_inv_z3 : ComplexF -> ComplexF;
+function_inv_z3 = |z| complex(1.0, 0.0) / (z * z * z);
 
 // w = 1 / (1 - z^2 + z^4), reciprocal of the 12-th cyclotomic polynomial.
-function10 : ComplexF -> ComplexF;
-function10 = |z| (
+function_inv_12_cyclotomic_poly : ComplexF -> ComplexF;
+function_inv_12_cyclotomic_poly = |z| (
     let z2 = z * z; // z^2
     let z4 = z2 * z2; // z^4
     complex(1.0, 0.0) / (complex(1.0, 0.0) - z2 + z4)
 );
 
+complex_exp : ComplexF -> ComplexF;
+complex_exp = |z| complex(exp(z.@re), 0.0) * complex(cos(z.@im), sin(z.@im));
+
+// w = exp(pi z)
+function_exp_pi_z : ComplexF -> ComplexF;
+function_exp_pi_z = |z| let z = complex(pi64, 0.0) * z; complex_exp(z);
+
+complex_sin : ComplexF -> ComplexF;
+complex_sin = |z| (
+    let iz = complex(0.0, 1.0) * z;
+    let eiz = complex_exp(iz);
+    let niz = complex(0.0, -1.0) * z;
+    let eniz = complex_exp(niz);
+    (eiz - eniz) / complex(0.0, 2.0)
+);
+
+complex_cos : ComplexF -> ComplexF;
+complex_cos = |z| (
+    let iz = complex(0.0, 1.0) * z;
+    let eiz = complex_exp(iz);
+    let niz = complex(0.0, -1.0) * z;
+    let eniz = complex_exp(niz);
+    (eiz + eniz) / complex(2.0, 0.0)
+);
+
+// w = sin(pi i z)
+function_sin_pi_i_z : ComplexF -> ComplexF;
+function_sin_pi_i_z = |z| (
+    let z = complex(pi64, 0.0) * complex(0.0, 1.0) * z;
+    complex_sin(z)
+);
+
+// w = 1 / sin(pi i z)
+function_inv_sin_pi_i_z : ComplexF -> ComplexF;
+function_inv_sin_pi_i_z = |z| (
+    complex(1.0, 0.0) / function_sin_pi_i_z(z)
+);
+
+// w = log(z); 
+function_log : ComplexF -> ComplexF;
+function_log = |z| complex(log(z.abs), z.arg);
+
+function_gamma_2z : ComplexF -> ComplexF;
+function_gamma_2z = |z| (
+    let z = z * complex(2.0, 0.0);
+    let gamma = complex(0.5772156649, 0.0);
+    let w = z * complex_exp(gamma * z);
+    let w = loop((w, 1), |(w, i)|
+        if i == 100 { break $ w };
+        let z_over_m = z / complex(i.to_F64, 0.0);
+        let w = w * (complex(1.0, 0.0) + z_over_m) * complex_exp(-z_over_m);
+        continue $ (w, i + 1)
+    );
+    complex(1.0, 0.0) / w
+);
+
 functions : Array (ComplexF -> ComplexF);
 functions = [
-    function1,
-    function2,
-    function3,
-    function4,
-    function5,
-    function6,
-    function7,
-    function8,
-    // function9, // In current implementation, functions with non-discrete siguarity are not rendered beautifully.
-    function10
+    function_z,
+    // function_z2,
+    function_z3,
+    function_inv_z,
+    // function_inv_z2,
+    function_inv_z3,
+    function_inv_12_cyclotomic_poly,
+    function_exp_pi_z,
+    function_sin_pi_i_z,
+    function_inv_sin_pi_i_z,
+    // function_log, // In current implementation, functions with non-isolated siguarity are not rendered beautifully.
+    function_gamma_2z
 ];
 
 window_size : (I64, I64);
