@@ -9,3 +9,5 @@ To compile the program, you need to
 - clone this repo with submodules by `git clone --recursive {repo-url}`,
 - install dependencies of [cairo-fixlang](https://github.com/tttmmmyyyy/cairo-fixlang) (cairo, X11, Xext) if necessary,
 - and do `make && ./a.out`.
+
+Once the program is launched, press `n` to togggle functions, and `q` to exit the program.

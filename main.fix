@@ -13,36 +13,36 @@ import Debug::{debug_println};
 type ComplexF = Complex F64;
 
 // w = z
-// function : ComplexF -> ComplexF;
-// function = |z| z;
+function1 : ComplexF -> ComplexF;
+function1 = |z| z;
 
 // w = z^2
-// function : ComplexF -> ComplexF;
-// function = |z| z * z;
+function2 : ComplexF -> ComplexF;
+function2 = |z| z * z;
 
 // w = z^3
-// function : ComplexF -> ComplexF;
-// function = |z| z * z * z;
+function3 : ComplexF -> ComplexF;
+function3 = |z| z * z * z;
 
 // w = 1 / z
-// function : ComplexF -> ComplexF;
-// function = |z| complex(1.0, 0.0) / z;
+function4 : ComplexF -> ComplexF;
+function4 = |z| complex(1.0, 0.0) / z;
 
 // w = 1 / z^2
-// function : ComplexF -> ComplexF;
-// function = |z| complex(1.0, 0.0) / (z * z);
+function5 : ComplexF -> ComplexF;
+function5 = |z| complex(1.0, 0.0) / (z * z);
 
 // w = 1 / z^3
-// function : ComplexF -> ComplexF;
-// function = |z| complex(1.0, 0.0) / (z * z * z);
+function6 : ComplexF -> ComplexF;
+function6 = |z| complex(1.0, 0.0) / (z * z * z);
 
 // w = exp(pi z)
-// function : ComplexF -> ComplexF;
-// function = |z| let z = complex(pi64, 0.0) * z; complex(exp(z.@re), 0.0) * complex(cos(z.@im), sin(z.@im));
+function7 : ComplexF -> ComplexF;
+function7 = |z| let z = complex(pi64, 0.0) * z; complex(exp(z.@re), 0.0) * complex(cos(z.@im), sin(z.@im));
 
 // w = 1 / sin(pi i z)
-function : ComplexF -> ComplexF;
-function = |z| (
+function8 : ComplexF -> ComplexF;
+function8 = |z| (
     let z = complex(0.0, 1.0) * complex(pi64, 0.0) * z;
     let exp = |z| complex(exp(z.@re), 0.0) * complex(cos(z.@im), sin(z.@im));
     let iz = complex(0.0, 1.0) * z;
@@ -53,17 +53,31 @@ function = |z| (
     complex(1.0, 0.0) / sinz
 );
 
-// w = log(z)
-// function : ComplexF -> ComplexF;
-// function = |z| complex(log(z.abs), z.arg);
+// w = log(z); 
+function9 : ComplexF -> ComplexF;
+function9 = |z| complex(log(z.abs), z.arg);
 
 // w = 1 / (1 - z^2 + z^4), reciprocal of the 12-th cyclotomic polynomial.
-// function : ComplexF -> ComplexF;
-// function = |z| (
-//     let z2 = z * z; // z^2
-//     let z4 = z2 * z2; // z^4
-//     complex(1.0, 0.0) / (complex(1.0, 0.0) - z2 + z4)
-// );
+function10 : ComplexF -> ComplexF;
+function10 = |z| (
+    let z2 = z * z; // z^2
+    let z4 = z2 * z2; // z^4
+    complex(1.0, 0.0) / (complex(1.0, 0.0) - z2 + z4)
+);
+
+functions : Array (ComplexF -> ComplexF);
+functions = [
+    function1,
+    function2,
+    function3,
+    function4,
+    function5,
+    function6,
+    function7,
+    function8,
+    // function9, // In current implementation, functions with non-discrete siguarity are not rendered beautifully.
+    function10
+];
 
 window_size : (I64, I64);
 window_size = (450, 800);
@@ -113,8 +127,8 @@ particle_radius = 2.0;
 
 // Returns the raw veclocity and the normalized vector.
 // The idea of normalization near poles is from: https://observablehq.com/@vinicius-mello/polya-vector-field
-vector_field : ComplexF -> (F64, ComplexF);
-vector_field = |z| (
+vector_field : (ComplexF -> ComplexF) -> ComplexF -> (F64, ComplexF);
+vector_field = |function, z| (
     let w = function(z);
     let v = w.abs;
     if v < eps { (0.0, complex(0.0, 0.0)) };
@@ -194,6 +208,7 @@ type State = box struct {
     now_time : F64,
     rng : Random,
     particles : Array Particle,
+    function_index : I64,
 };
 
 namespace State {
@@ -208,7 +223,8 @@ namespace State {
             prev_time : time,
             now_time : 0.0,
             rng : rng,
-            particles : particles
+            particles : particles,
+            function_index : 0,
         }
     );
 
@@ -244,7 +260,7 @@ namespace State {
             } else { // If the particle is alive,
                 let particle = state.@particles.@(i);
                 let last = particle.@points.@(particle.@points.get_size - 1);
-                let (velocity, w) = vector_field(last.@pos);
+                let (velocity, w) = vector_field(functions.@(state.@function_index), last.@pos);
                 let pos = last.@pos + w * complex(delta, 0.0);
                 state.mod_particles(mod(i, add_history(pos, velocity)))
             };
@@ -303,11 +319,23 @@ main = (
         let (state, is_exit) = *loop_m(state, |state|
             if *window.events_queued(QueuedMode::already) == 0 { break_m $ (state, false) };
             let event = *window.next_event;
+            
+            // Handle key events.
             if !event.is_key_press { continue_m $ state };
             let keycode = event.as_key_press.@keycode;
             let keysym = *window.keycode_to_keysym(keycode);
+
+            // If `q` is pressed, exit the prgram.
             let keysym_q = string_to_keysym("q");
             if keysym == keysym_q { break_m $ (state, true) };
+
+            // If `n` is pressed, change the function.
+            let keysym_n = string_to_keysym("n");
+            if keysym == keysym_n {
+                let state = state.mod_function_index(add(1) >> |i| i % functions.get_size);
+                continue_m $ state
+            };
+
             continue_m $ state
         );
         if is_exit { break_m $ () };
