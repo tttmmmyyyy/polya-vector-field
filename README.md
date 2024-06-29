@@ -11,3 +11,5 @@ To compile the program, you need to
 - and do `make && ./a.out`.
 
 Once the program is launched, press `n` to togggle functions, and `q` to exit the program.
+
+Resizing window is not supported currently; if you want to do so, change `window_size` value in the `main.fix`.
