@@ -211,23 +211,23 @@ type Particle = unbox struct {
 };
 
 namespace Particle {
-    reset_random : Random -> Particle -> (Particle, Random);
+    reset_random : Random -> Particle -> (Random, Particle);
     reset_random = |rng, particle| (
         let particle = particle.mod_points(truncate(0));
         let particle = particle.set_dead_count(0);
 
-        let (x, rng) = rng.generate_F64;
-        let (y, rng) = rng.generate_F64;
+        let (rng, x) = rng.generate_F64;
+        let (rng, y) = rng.generate_F64;
         let (min_x, min_y, width, height) = view_rect;
         let x = min_x + x * width;
         let y = min_y + y * height;
         let pos = complex(x, y);
         let particle = particle.add_history(pos, 0.0);
 
-        (particle, rng)
+        (rng, particle)
     );
 
-    generate : Random -> (Particle, Random);
+    generate : Random -> (Random, Particle);
     generate = |rng| Particle::empty.reset_random(rng);
 
     empty : Particle;
@@ -253,7 +253,7 @@ namespace State {
     make = |time| (
         let rng = Random::init_by_seed(time.to_U64);
         let (particles, rng) = Iterator::range(0, particles_num).fold(([], rng), |(particles, rng), _|
-            let (point, rng) = Particle::generate(rng);
+            let (rng, point) = Particle::generate(rng);
             (particles.push_back(point), rng)
         );
         State {
@@ -265,11 +265,11 @@ namespace State {
         }
     );
 
-    generate_F64 : State -> (F64, State);
+    generate_F64 : State -> (State, F64);
     generate_F64 = |state| (
-        let (x, rng) = state.@rng.generate_F64;
+        let (rng, x) = state.@rng.generate_F64;
         let state = state.set_rng(rng);
-        (x, state)
+        (state, x)
     );
 
     update : State -> State;
@@ -280,13 +280,13 @@ namespace State {
         loop((0, state), |(i, state)|
             if i == state.@particles.get_size { break $ state };
             let dead_count = state.@particles.@(i).@dead_count;
-            let (x, state) = state.generate_F64;
+            let (state, x) = state.generate_F64;
             let kill = x > exp(-alpha * delta);
             let state = if dead_count > 0 { // If the particle is already dead, 
                 if dead_count > history_len { // If the particle is dead for history_len frames, re-generate it.
                     let particle = state.@particles.@(i);
                     let state = state.mod_particles(set(i, Particle::empty));
-                    let (particle, rng) = particle.reset_random(state.@rng);
+                    let (rng, particle) = particle.reset_random(state.@rng);
                     let state = state.set_rng(rng);
                     state.mod_particles(set(i, particle))
                 } else { // If the particle is not dead for history_len frames, increase the dead_count.
