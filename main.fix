@@ -284,11 +284,8 @@ namespace State {
             let kill = x > exp(-alpha * delta);
             let state = if dead_count > 0 { // If the particle is already dead, 
                 if dead_count > history_len { // If the particle is dead for history_len frames, re-generate it.
-                    let particle = state.@particles.@(i);
-                    let state = state.mod_particles(set(i, Particle::empty));
-                    let (rng, particle) = particle.reset_random(state.@rng);
-                    let state = state.set_rng(rng);
-                    state.mod_particles(set(i, particle))
+                    let (rng, state) = state.act_particles(Array::act(i, Particle::reset_random(state.@rng)));
+                    state.set_rng(rng)
                 } else { // If the particle is not dead for history_len frames, increase the dead_count.
                     state.mod_particles(mod(i, mod_dead_count(add(1))))
                 }
