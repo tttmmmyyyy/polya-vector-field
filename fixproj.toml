@@ -17,15 +17,15 @@ git = { url = "https://github.com/tttmmmyyyy/fixlang-cairo.git" }
 
 [[dependencies]]
 name = "math"
-version = "*"
+version = "0.1.0"
 git = { url = "https://github.com/tttmmmyyyy/fixlang-math.git" }
 
 [[dependencies]]
 name = "time"
-version = "*"
+version = "0.1.0"
 git = { url = "https://github.com/tttmmmyyyy/fixlang-time.git" }
 
 [[dependencies]]
 name = "random"
-version = "*"
+version = "0.1.0"
 git = { url = "https://github.com/tttmmmyyyy/fixlang-random.git" }
