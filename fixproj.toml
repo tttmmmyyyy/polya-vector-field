@@ -1,0 +1,31 @@
+[general]
+name = "polya-vector-field"
+version = "0.1.0"
+
+[build]
+files = [
+    "main.fix",
+    "fixlang_minilib/lib/math/complex.fix",
+    "fixlang_minilib/lib/math/types.fix",
+]
+
+[[dependencies]]
+name = "cairo-fix"
+version = "0.1.0"
+git = { url = "https://github.com/tttmmmyyyy/fixlang-cairo.git" }
+
+
+[[dependencies]]
+name = "math"
+version = "*"
+git = { url = "https://github.com/tttmmmyyyy/fixlang-math.git" }
+
+[[dependencies]]
+name = "time"
+version = "*"
+git = { url = "https://github.com/tttmmmyyyy/fixlang-time.git" }
+
+[[dependencies]]
+name = "random"
+version = "*"
+git = { url = "https://github.com/tttmmmyyyy/fixlang-random.git" }

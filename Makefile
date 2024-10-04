@@ -4,15 +4,7 @@
 # For Linux:
 LIBPATH := ``
 
-MAIN_FILE := main.fix
-MINILIB_FILES = fixlang_minilib/lib/math/complex.fix fixlang_minilib/lib/math/types.fix
-
 FIX_FILES := $(MAIN_FILE) cairo-fixlang/cairo.fix cairo-fixlang/cairo.xlib_surface.fix $(MINILIB_FILES)
 
 all: libfixcairox11.so
 	fix build -f $(FIX_FILES) -L. $(LIBPATH) -d fixcairox11 cairo X11 Xext
-
-libfixcairox11.so:
-	cd cairo-fixlang;\
-	make libfixcairox11.so
-	cp cairo-fixlang/libfixcairox11.so .

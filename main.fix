@@ -8,8 +8,6 @@ import Math::{pi64, exp, sin, cos, atan, log, fmod};
 import Time;
 import Cairo.XlibSurface;
 
-import Debug::{debug_println};
-
 type ComplexF = Complex F64;
 
 // w = z

@@ -1,0 +1,37 @@
+proj_file_hash = "adc99f1a79a1081d22474a793a9fbf8e"
+
+[[dependencies]]
+name = "cairo-fix"
+version = "0.1.2"
+path = ".fixlang/deps/cairo-fix_0.1.2"
+
+[dependencies.git]
+repo = "https://github.com/tttmmmyyyy/fixlang-cairo.git"
+rev = "4e4f39a59e550995c2752583da311264aecda804"
+
+[[dependencies]]
+name = "math"
+version = "0.1.1"
+path = ".fixlang/deps/math_0.1.1"
+
+[dependencies.git]
+repo = "https://github.com/tttmmmyyyy/fixlang-math.git"
+rev = "42ee39682607797bbc25d7521846b708a62507b0"
+
+[[dependencies]]
+name = "time"
+version = "0.1.0"
+path = ".fixlang/deps/time_0.1.0"
+
+[dependencies.git]
+repo = "https://github.com/tttmmmyyyy/fixlang-time.git"
+rev = "0e290ebe9a23838298243e72b09e181ff9a99386"
+
+[[dependencies]]
+name = "random"
+version = "0.1.0"
+path = ".fixlang/deps/random_0.1.0"
+
+[dependencies.git]
+repo = "https://github.com/tttmmmyyyy/fixlang-random.git"
+rev = "757b0f69fc5d508cc4a1b2dea524160f8e666eb9"
