@@ -1,4 +1,4 @@
-proj_file_hash = "c7241dd58a8bb08f19c6a332f4fb6163"
+proj_file_hash = "e9314500c5a80e34d182382640c5a99d"
 
 [[dependencies]]
 name = "cairo-fix"
