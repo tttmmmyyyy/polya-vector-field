@@ -2,12 +2,12 @@ proj_file_hash = "b8d9ec5a24aef35d80a5f3e96b70b984"
 
 [[dependencies]]
 name = "cairo-fix"
-version = "0.1.4"
-path = ".fixlang/deps/cairo-fix_0.1.4"
+version = "0.1.5"
+path = ".fixlang/deps/cairo-fix_0.1.5"
 
 [dependencies.git]
 repo = "https://github.com/tttmmmyyyy/fixlang-cairo.git"
-rev = "2d6184072781b713cd7455087f4d009c2c1e84ff"
+rev = "d564729bfd1cc4d48543ce4a32b04f6a86c8922c"
 
 [[dependencies]]
 name = "math"
