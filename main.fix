@@ -303,18 +303,18 @@ namespace State {
     render : Cairo -> State -> IO ();
     render = |cairo, state| (
         // Draw background.
-        eval *cairo.set_source_rgb((0.0, 0.0, 0.0));
-        eval *cairo.rectangle((0.0, 0.0), window_size_f);
-        eval *cairo.fill;
+        cairo.set_source_rgb((0.0, 0.0, 0.0));;
+        cairo.rectangle((0.0, 0.0), window_size_f);;
+        cairo.fill;;
 
-        eval *cairo.set_line_width(1.0);
+        cairo.set_line_width(1.0);;
 
         // Draw particles.
-        eval *loop_m(0, |i|
+        loop_m(0, |i|
             if i >= state.@particles.get_size { break_m $ () };
             let particle = state.@particles.@(i);
             let points = particle.@points.get_size;
-            eval *loop_m(points - 1, |i|
+            loop_m(points - 1, |i|
                 if i == 0 { break_m $ () };
                 if points - i > history_len { break_m $ () };
                 let now = particle.@points.@(i);
@@ -322,14 +322,14 @@ namespace State {
                 let (r, g, b) = velocity_to_color(normalize_velocity(now.@velocity));
                 let a = 1.0 - (points - i).to_F64 / history_len.to_F64;
                 let a = a * (history_len - particle.@dead_count).to_F64 / history_len.to_F64;
-                eval *cairo.set_source_rgba((r, g, b, a));
-                eval *cairo.move_to(complex_to_pos(prev.@pos));
-                eval *cairo.line_to(complex_to_pos(now.@pos));
-                eval *cairo.stroke;
+                cairo.set_source_rgba((r, g, b, a));;
+                cairo.move_to(complex_to_pos(prev.@pos));;
+                cairo.line_to(complex_to_pos(now.@pos));;
+                cairo.stroke;;
                 continue_m $ i - 1
-            );
+            );;
             continue_m $ i + 1
-        );
+        );;
         
         pure()
     );
@@ -339,15 +339,15 @@ main : IO ();
 main = (
     let window = *XlibSurface::create_simple_window(window_size);
     let event_mask = EventMask::key_press;
-    eval *window.select_input(event_mask);
+    window.select_input(event_mask);;
 
     let surface = XlibSurface::create_back_surface(window);
-    let cairo = Cairo::create(surface);
+    let cairo = *Cairo::create(surface);
 
     let time = (*Time::get_now_monotonic).to_F64;
     let state = State::make(time);
 
-    eval *loop_m(state, |state| 
+    loop_m(state, |state| 
         let (state, is_exit) = *loop_m(state, |state|
             if *window.events_queued(QueuedMode::already) == 0 { break_m $ (state, false) };
             let event = *window.next_event;
@@ -377,11 +377,11 @@ main = (
         let state = state.set_now_time(now_time);
         let state = state.update;
         let state = state.set_prev_time(now_time);
-        eval *state.render(cairo);
-        eval *window.flush;
-        eval *window.swap_buffers(XbeSwapAction::undefined);
+        state.render(cairo);;
+        window.flush;;
+        window.swap_buffers(XbeSwapAction::undefined);;
         continue_m $ state
-    );
+    );;
 
     window.destroy_window
 );
