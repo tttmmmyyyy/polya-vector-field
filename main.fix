@@ -250,7 +250,7 @@ namespace State {
     make : F64 -> State;
     make = |time| (
         let rng = Random::init_by_seed(time.to_U64);
-        let (particles, rng) = Iterator::range(0, particles_num).fold(([], rng), |(particles, rng), _|
+        let (particles, rng) = Iterator::range(0, particles_num).fold(([], rng), |_, (particles, rng)|
             let (rng, point) = Particle::generate(rng);
             (particles.push_back(point), rng)
         );
